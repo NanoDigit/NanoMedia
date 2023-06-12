@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import qrcode
+from qrcodeutil import qrcodeutil
 
 # Create the main window
 window = tk.Tk()
@@ -29,6 +30,13 @@ name.pack()
 
 # Generate QR Code function
 def generateCode():
+    qrcoder = qrcodeutil()
+    ret = qrcoder.generateCode(size.get(),text.get(),loc.get(),name.get())
+    if ret == True:
+        messagebox.showinfo("QR Code Generator", "QR Code is saved successfully!")
+        return
+    messagebox.showinfo("QR Code Generator", "Major failure")
+    return
     qr = qrcode.QRCode(
         version=size.get(),
         box_size=10,
