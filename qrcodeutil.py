@@ -1,9 +1,9 @@
 import qrcode
 import os
 class qrcodeutil:
-    def generateCode(self,sizer,text,loc,filename):
+    def generateCode(self,size,text,loc,filename):
         qr = qrcode.QRCode(
-            version=sizer,
+            version=size,
             box_size=10,
             border=5
         )

@@ -1,57 +1,62 @@
 import tkinter as tk
 from tkinter import messagebox
-import qrcode
 from qrcodeutil import qrcodeutil
 
-# Create the main window
+def generateCode():
+    size = size_entry.get()
+    text = text_entry.get()
+    loc = loc_entry.get()
+    name = name_entry.get()
+
+    # Validate input
+    if not (size and text and loc and name):
+        messagebox.showerror("Error", "Please fill all the questions.")
+        return
+
+    try:
+        size = int(size)
+    except ValueError:
+        messagebox.showerror("Error", "Size must be a number.")
+        return
+
+    qrcoder = qrcodeutil()
+    success = qrcoder.generateCode(size, text, loc, name)
+    if success:
+        messagebox.showinfo("QR Code Generator", "QR Code saved successfully!")
+    else:
+        messagebox.showerror("Error", "Failed to save QR Code.")
+
 window = tk.Tk()
 window.title("QR Code Generator")
+window.geometry("400x300")
 
-# Create labels and entry fields
-size_label = tk.Label(window, text="QR Code Size:")
-size_label.pack()
-size = tk.Entry(window)
-size.pack()
+input_frame = tk.Frame(window, pady=10)
+input_frame.pack()
 
-text_label = tk.Label(window, text="Text to Encode:")
-text_label.pack()
-text = tk.Entry(window)
-text.pack()
+size_label = tk.Label(input_frame, text="QR Code Size:")
+size_label.grid(row=0, column=0, sticky="e")
+size_entry = tk.Entry(input_frame, width=20)
+size_entry.grid(row=0, column=1)
 
-loc_label = tk.Label(window, text="File Location:")
-loc_label.pack()
-loc = tk.Entry(window)
-loc.pack()
+text_label = tk.Label(input_frame, text="Text:")
+text_label.grid(row=1, column=0, sticky="e")
+text_entry = tk.Entry(input_frame, width=20)
+text_entry.grid(row=1, column=1)
 
-name_label = tk.Label(window, text="File Name:")
-name_label.pack()
-name = tk.Entry(window)
-name.pack()
+loc_label = tk.Label(input_frame, text="File Location:")
+loc_label.grid(row=2, column=0, sticky="e")
+loc_entry = tk.Entry(input_frame, width=20)
+loc_entry.grid(row=2, column=1)
 
-# Generate QR Code function
-def generateCode():
-    qrcoder = qrcodeutil()
-    ret = qrcoder.generateCode(size.get(),text.get(),loc.get(),name.get())
-    if ret == True:
-        messagebox.showinfo("QR Code Generator", "QR Code is saved successfully!")
-        return
-    messagebox.showinfo("QR Code Generator", "Major failure")
-    return
-    qr = qrcode.QRCode(
-        version=size.get(),
-        box_size=10,
-        border=5
-    )
-    qr.add_data(text.get())
-    qr.make(fit=True)
-    img = qr.make_image()
-    fileDirec = loc.get() + '\\' + name.get()
-    img.save(f'{fileDirec}.png')
-    messagebox.showinfo("QR Code Generator", "QR Code is saved successfully!")
+name_label = tk.Label(input_frame, text="File Name:")
+name_label.grid(row=3, column=0, sticky="e")
+name_entry = tk.Entry(input_frame, width=20)
+name_entry.grid(row=3, column=1)
 
-# Generate button
-generate_button = tk.Button(window, text="Generate QR Code", command=generateCode)
-generate_button.pack()
+button_frame = tk.Frame(window)
+button_frame.pack()
 
-# Start the Tkinter event loop
+generate_button = tk.Button(button_frame, text="Generate QR Code", command=generateCode)
+generate_button.pack(pady=10)
+
 window.mainloop()
