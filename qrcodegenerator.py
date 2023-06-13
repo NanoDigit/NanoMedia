@@ -1,34 +1,35 @@
 import tkinter as tk
 from tkinter import messagebox
 from qrcodeutil import qrcodeutil
+#pip install pillow to get this package
+from PIL import ImageTk,Image
 
-def generateCode():
-    size = size_entry.get()
-    text = text_entry.get()
-    loc = loc_entry.get()
-    name = name_entry.get()
-
-    # Validate input
-    if not (size and text and loc and name):
-        messagebox.showerror("Error", "Please fill all the questions.")
+def saveCode():
+    if qrcoder.Image == None:
         return
-
-    try:
-        size = int(size)
-    except ValueError:
-        messagebox.showerror("Error", "Size must be a number.")
-        return
-
-    qrcoder = qrcodeutil()
-    success = qrcoder.generateCode(size, text, loc, name)
-    if success:
-        messagebox.showinfo("QR Code Generator", "QR Code saved successfully!")
+    if qrcoder.saveQR()== True:
+        messagebox.showinfo("QR Code Generator", "QR Code is saved successfully as " + qrcoder.fullFile +"!")
     else:
-        messagebox.showerror("Error", "Failed to save QR Code.")
+        messagebox.showinfo("QR Code Generator", "QR Code FAILURE " + qrcoder.fullFile +"!")
+    return
+
+# Generate QR Code function
+def generateCode():
+    if text_entry.get()=="":
+        return
+    qrcoder.setSize(size_entry.get(),text_entry.get(),loc_entry.get(),name_entry.get())
+    ret = qrcoder.generateQR()
+    if ret == True:
+        rawImage = qrcoder.Image.resize((200,200))
+        img = ImageTk.PhotoImage(rawImage)  
+        
+        pic_label = tk.Label(window,image=img)
+        pic_label.pack()        
+        window.mainloop()
 
 window = tk.Tk()
 window.title("QR Code Generator")
-window.geometry("400x300")
+window.geometry("200x400")
 
 input_frame = tk.Frame(window, pady=10)
 input_frame.pack()
@@ -58,5 +59,9 @@ button_frame.pack()
 
 generate_button = tk.Button(button_frame, text="Generate QR Code", command=generateCode)
 generate_button.pack(pady=10)
+
+save_button = tk.Button(window, text="Save QR Code", command=saveCode)
+save_button.pack(pady=10)
+qrcoder = qrcodeutil()
 
 window.mainloop()
